@@ -24,8 +24,8 @@ SCHEDULER_QUEUE_CLASS = "scrapy_redis.queue.SpiderPriorityQueue"
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 USER_AGENT = 'scrapyweibobyapi'
 DOWNLOAD_DELAY = 2
-DOWNLOAD_TIMEOUT = 5
+DOWNLOAD_TIMEOUT = 15
 
 # Specify the host and port to use when connecting to Redis (optional).
-REDIS_HOST = '192.168.3.48'
+REDIS_HOST = '172.17.161.101'
 REDIS_PORT = 6379
