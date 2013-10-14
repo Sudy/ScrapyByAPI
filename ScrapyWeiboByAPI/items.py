@@ -12,6 +12,7 @@ class WeiboItem(Item):
 	pos = Field()
 	time = Field()
 	tid = Field()
+	eid = Field()
 
 #
 class UserItem(Item):
@@ -23,3 +24,4 @@ class UserItem(Item):
 	followers_count = Field()
 	friends_count = Field()
 	tid = Field()
+	eid = Field()

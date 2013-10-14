@@ -44,41 +44,41 @@ class WeiboSpider(CrawlSpider):
     #decide whether we need to further parse it comment
 
 	def parse_status(self,status):
-		self.log("-------------------")
-		#try:
-		#Sun May 13 00:56:44 +0800 2012
-		u_time = time.mktime(time.strptime(status["created_at"],"%a %b %d %H:%M:%S +0800 %Y"))
-		#if the users is created later than the event start later
-		if u_time < self.start_time or u_time > self.end_time:
+		try:
+			#Sun May 13 00:56:44 +0800 2012
+			u_time = time.mktime(time.strptime(status["created_at"],"%a %b %d %H:%M:%S +0800 %Y"))
+			#if the users is created later than the event start later
+			if u_time < self.start_time or u_time > self.end_time:
+				return False,0
+		except:
 			return False,0
-		#except:
-		#	return False,0
-		#	self.log(status["created_at"])
+			self.log(status["created_at"])
 
-		#try:
-		if status.has_key("deleted"):
+		try:
+			if status.has_key("deleted"):
+				return False,0
+			#get an new item
+			wItem = WeiboItem()
+
+			wItem["mid"] = status['mid']
+			
+			result =  status["text"]
+
+			if status.has_key("retweeted_status"):
+				retweet_status = status["retweeted_status"]
+				if not retweet_status.has_key("deleted"):
+					result += "//@" + retweet_status["user"]["screen_name"] + ": " + retweet_status["text"]
+
+			wItem["content"] = result
+			wItem["uid"] = status['user']['id']
+			wItem["pos"] = status['user']['location']
+			wItem["time"] = status['created_at']
+			#original weibo
+			wItem["tid"] = 1
+			wItem["eid"] = 1
+			return True,wItem
+		except:
 			return False,0
-		#get an new item
-		wItem = WeiboItem()
-
-		wItem["mid"] = status['mid']
-		
-		result =  status["text"]
-
-		if status.has_key("retweeted_status"):
-			retweet_status = status["retweeted_status"]
-			if not retweet_status.has_key("deleted"):
-				result += "//@" + retweet_status["user"]["screen_name"] + ": " + retweet_status["text"]
-
-		wItem["content"] = result
-		wItem["uid"] = status['user']['id']
-		wItem["pos"] = status['user']['location']
-		wItem["time"] = status['created_at']
-		#original weibo
-		wItem["tid"] = 1
-		return True,wItem
-		#except:
-		#	return False,0
 
 	def parse_comment(self,comment):
 		cItem = WeiboItem()
@@ -88,7 +88,8 @@ class WeiboSpider(CrawlSpider):
 		cItem["pos"] = comment["user"]["location"]
 		cItem["time"] = comment["created_at"]
 		#user comment
-		cItem["tid"] = 2		
+		cItem["tid"] = 2
+		cItem["eid"] = 1		
 		return cItem
 
 		
@@ -105,6 +106,7 @@ class WeiboSpider(CrawlSpider):
 		userItem["friends_count"] = user["friends_count"]
 		#follwer information
 		userItem["tid"] = 3
+		userItem["eid"] = 1
 		return userItem
 		
 	def parse_weibo(self,response):
